@@ -12,7 +12,7 @@
 		"web-vitals": "^2.1.0"
 	},
 	"scripts": {
-		"start": "MangaCatalogue & react-scripts start",
+		"start": "react-scripts start",
 		"dev": "concurrently --kill-others \"MangaCatalogue\" \"react-scripts start\"",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
