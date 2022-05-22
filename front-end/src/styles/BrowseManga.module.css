@@ -1,0 +1,12 @@
+.catalogue {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	justify-content: center;
+	align-items: center;
+	gap: 0;
+	overflow: auto;
+}
+
+.cards {
+	width: 50%;
+}

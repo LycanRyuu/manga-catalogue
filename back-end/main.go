@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -11,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
-	_ "github.com/lib/pq"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type config struct {
@@ -26,40 +25,40 @@ type Application struct {
 	pages struct {
 		genre int
 	}
-	dbCon     *sql.DB
-	config    config
-	logger    *log.Logger
-	collector *colly.Collector
+	// dbCon     *sql.DB
+	dbCon           *mongo.Database
+	mangaCollection *mongo.Collection
+	config          config
+	logger          *log.Logger
+	collector       *colly.Collector
 }
-
-// var app Application
 
 func main() {
 	var cfg config
 	flag.IntVar(&cfg.port, "port", 10000, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment (Development|Production)")
-	flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres:postgres@localhost/go_movies?sslmode=disable", "Database connection string")
-	// postgres://username:password@url/database?sslmode=disable
+	// flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres:postgres@localhost/go_movies?sslmode=disable", "Database connection string")
 	flag.Parse()
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
-
-	// app:=Application{}
-
-	db, err := openDB(cfg)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	defer db.Close()
 
 	collector := colly.NewCollector(colly.Async(true))
 
 	app := &Application{
 		config:    cfg,
 		logger:    logger,
-		dbCon:     db,
 		collector: collector,
+		// dbCon:     db,
 	}
+
+	// db, err := openDB(cfg)
+	// if err != nil {
+	// 	logger.Fatal(err)
+	// }
+	// defer db.Close()
+
+	app.openDB()
+	defer app.dbCon.Client().Disconnect(context.TODO())
 
 	logger.Println("Starting server on port", cfg.port)
 
@@ -71,25 +70,8 @@ func main() {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	err = srv.ListenAndServe()
+	err := srv.ListenAndServe()
 	if err != nil {
 		log.Println(err)
 	}
-}
-
-func openDB(cfg config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", cfg.db.dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err = db.PingContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }
