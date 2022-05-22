@@ -1,9 +1,23 @@
 version: "3.8"
 services:
+    backend:
+        build: ./back-end
+        container_name: MangaCatalogueAPI
+        ports:
+            - 10000:10000
+        volumes:
+            - /back-end:/back-end
     frontend:
         build: ./front-end
         container_name: MangaCatalogueUI
         ports:
             - 3000:3000
+        volumes:
+            - /front-end:/front-end
+            - /front-end/node_modules
+        environment:
+            - CHOKIDAR_USEPOLLING=true
         stdin_open: true
         tty: true
+        depends_on:
+            - backend
