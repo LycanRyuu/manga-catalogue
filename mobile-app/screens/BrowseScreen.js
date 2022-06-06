@@ -1,61 +1,106 @@
 import React from "react";
 import {
-	Button,
+	Dimensions,
 	FlatList,
-	Image,
+	ImageBackground,
 	StyleSheet,
 	Text,
-	TouchableOpacity,
+	TouchableHighlight,
 	View,
 } from "react-native";
 import response from "../Response";
+import { useTheme } from "@react-navigation/native";
+// import Tiles from "react-native-tiles";
+import { useContext } from "react";
+import AppContext from "../shared/AppContext";
+
+const padding = 5;
 
 const BrowseScreen = ({ navigation }) => {
+	const { colors, font } = useTheme();
+	const appContext = useContext(AppContext);
+
 	return (
-		// <View style={styles.container}>
-		<View>
-			<Button
-				title='Login'
-				onPress={() => navigation.navigate("Login")}
-			/>
-			<FlatList
-				data={response.manga.mangas}
-				keyExtractor={(item) => item.id}
-				renderItem={({ item }) => (
-					<TouchableOpacity>
-						<View style={styles.listItem}>
-							<Image
-								source={{
-									uri: item.image_url,
-									height: 120,
-									width: 100,
-								}}
-								style={styles.image}
-							/>
-							<Text style={styles.listItemText}>{item.name}</Text>
+		<FlatList
+			style={{
+				flex: 1,
+				backgroundColor: "#000",
+			}}
+			data={response.manga.mangas}
+			numColumns={appContext.columnCount}
+			key={appContext.columnCount}
+			renderItem={({ item }) => (
+				<TouchableHighlight
+					onPress={() => navigation.navigate("MangaInfo", item)}>
+					<ImageBackground
+						source={{ uri: item.image_url }}
+						resizeMode='cover'
+						style={styles.tile}
+						imageStyle={{ borderRadius: 6 }}>
+						<View
+							style={{
+								...styles.tile,
+								// backgroundColor: colors.secondary,
+								width:
+									Dimensions.get("window").width /
+										appContext.columnCount -
+									padding * (appContext.columnCount - 1),
+								...(appContext.columnCount === 2 && {
+									height:
+										Dimensions.get("window").height /
+											appContext.columnCount -
+										padding * (appContext.columnCount - 1),
+								}),
+							}}>
+							<ImageBackground
+								blurRadius={10}
+								style={{
+									backgroundColor: "#555",
+									borderRadius: 6,
+									marginBottom: 10,
+								}}>
+								<Text
+									style={{
+										...styles.containerText,
+										fontFamily: font.regular,
+										textAlign: "center",
+									}}>
+									{item.name}
+								</Text>
+							</ImageBackground>
 						</View>
-					</TouchableOpacity>
-				)}
-			/>
-		</View>
+					</ImageBackground>
+				</TouchableHighlight>
+			)}
+		/>
 	);
 };
 
 const styles = StyleSheet.create({
-	// container: { marginTop: 25 },
-	listItem: {
+	scrollContainer: {
+		flex: 1,
+	},
+	container: {
 		flex: 1,
 		backgroundColor: "#333333",
-		borderBottomColor: "#bbb",
-		borderBottomWidth: 1,
-		// alignItems: "center",
-		justifyContent: "center",
 		flexDirection: "row",
+		// flexGrow: 0,
+		flexWrap: "wrap",
+		padding: 2,
 	},
-	listItemText: {
-		flex: 5,
+	containerText: {
+		fontSize: 18,
 		color: "#fff",
-		paddingLeft: 10,
+		padding: 6,
+		textAlign: "center",
+		// borderRadius: 6,
+		// backgroundColor: "black",
+	},
+	tile: {
+		margin: padding,
+		height: 320,
+		justifyContent: "flex-end",
+		alignItems: "center",
 	},
 });
 

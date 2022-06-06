@@ -6,13 +6,27 @@ import (
 )
 
 func (app *Application) writeJson(w http.ResponseWriter, status int, data interface{}, wrap string) error {
-	wrapper := make(map[string]interface{})
-	wrapper[wrap] = data
-
-	js, err := json.Marshal(wrapper)
-	if err != nil {
-		return err
+	var js []byte
+	var err error
+	if wrap != "" {
+		wrapper := make(map[string]interface{})
+		wrapper[wrap] = data
+		js, err = json.Marshal(wrapper)
+		if err != nil {
+			return err
+		}
+	} else {
+		wrapper := data
+		js, err = json.Marshal(wrapper)
+		if err != nil {
+			return err
+		}
 	}
+
+	// js, err := json.Marshal(wrapper)
+	// if err != nil {
+	// 	return err
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

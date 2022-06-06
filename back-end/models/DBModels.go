@@ -1,18 +1,20 @@
 package models
 
 type Manga struct {
-	Id              string   `json:"-"`
-	Name            string   `json:"name"`
-	URL             string   `json:"url"`
-	ImageURL        string   `json:"image_url"`
-	Genre           []string `json:"genre"`
-	MALRating       float32  `json:"mal_rating"`
-	MangaNatoRating float32  `json:"manganato_rating"`
-	Author          []string `json:"author"`
-	ReleaseDate     string   `json:"release_date"`
-	Ongoing         bool     `json:"ongoing"`
-	Synopsis        string   `json:"synopsis"`
-	ChapterNum      float32  `json:"chapter_num"`
+	Id            string   `json:"-"`
+	Name          string   `json:"name"`
+	AlternateName []string `json:"alternate_name"`
+	URL           string   `json:"url"`
+	ImageURL      string   `json:"image_url"`
+	Genre         []string `json:"genre"`
+	Rating        float32  `json:"rating"`
+	Author        []string `json:"author"`
+	ReleaseDate   string   `json:"release_date"`
+	LastUpdated   string   `json:"last_updated"`
+	Ongoing       bool     `json:"ongoing"`
+	Reads         int      `json:"reads"`
+	Synopsis      string   `json:"synopsis"`
+	ChapterNum    float32  `json:"chapter_num"`
 }
 
 type User struct {

@@ -1,12 +1,14 @@
 package main
 
 import (
-	"context"
+	"MangaCatalogue/models"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -31,6 +33,10 @@ type Application struct {
 	config          config
 	logger          *log.Logger
 	collector       *colly.Collector
+	mangaData       models.BrowseManga
+	mangas          chan models.Manga
+	moreInfo        map[string]models.Manga
+	mangaInfo       sync.Map
 }
 
 func main() {
@@ -40,7 +46,15 @@ func main() {
 	// flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres:postgres@localhost/go_movies?sslmode=disable", "Database connection string")
 	flag.Parse()
 
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	f, err := os.OpenFile("Desktop/testlogfile.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	wrt := io.MultiWriter(os.Stdout, f)
+
+	// logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger := log.New(wrt, "", log.Ldate|log.Ltime)
 
 	collector := colly.NewCollector(colly.Async(true))
 
@@ -48,6 +62,7 @@ func main() {
 		config:    cfg,
 		logger:    logger,
 		collector: collector,
+		// mangas:    make(chan models.Manga),
 		// dbCon:     db,
 	}
 
@@ -57,8 +72,8 @@ func main() {
 	// }
 	// defer db.Close()
 
-	app.openDB()
-	defer app.dbCon.Client().Disconnect(context.TODO())
+	// app.openDB()
+	// defer app.dbCon.Client().Disconnect(context.TODO())
 
 	logger.Println("Starting server on port", cfg.port)
 

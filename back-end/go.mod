@@ -3,13 +3,13 @@ module MangaCatalogue
 go 1.18
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/gocolly/colly v1.2.0
 	github.com/julienschmidt/httprouter v1.3.0
 	go.mongodb.org/mongo-driver v1.9.0
 )
 
 require (
-	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/xmlquery v1.3.10 // indirect

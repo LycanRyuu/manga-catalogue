@@ -17,6 +17,7 @@ func (app *Application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/", homePage)
 	// router.HandlerFunc(http.MethodGet, "/manga/genre/:id", app.browseByGenre)
+	router.HandlerFunc(http.MethodGet, "/mangas", app.updateLibrary)
 	router.HandlerFunc(http.MethodGet, "/manga/:id", app.browseManga)
 
 	return app.enableCors(router)
